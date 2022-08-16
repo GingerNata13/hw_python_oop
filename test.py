@@ -17,10 +17,10 @@ class InfoMessage:
 
     def get_message(self) -> str:
         return (f'Тип тренировки: {self.training_type}; '
-                f'Длительность: {self.duration}; '
-                f'Дистанция: {self.distance}; '
-                f'Ср. скорость: {self.speed} км/ч; '
-                f'Потрачено ккал: {self.calories}.'
+                f'Длительность: {round(self.duration,3)}; '
+                f'Дистанция: {round(self.distance,3)}; '
+                f'Ср. скорость: {round(self.speed, 3)} км/ч; '
+                f'Потрачено ккал: {round(self.calories, 3)}.'
                 )
 
 
@@ -153,3 +153,6 @@ if __name__ == '__main__':
     for workout_type, data in packages:
         training = read_package(workout_type, data)
         main(training)
+
+
+
