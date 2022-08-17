@@ -71,8 +71,8 @@ class Running(Training):
         m_in_h: int = 60
         calories_part1 = (k1 * self.get_mean_speed() - k2)
         calories_part2 = self.weight / self.M_IN_KM * (self.duration * m_in_h)
-        calories: float = calories_part1 * calories_part2
-        return round(calories, 6)
+        calories: float = round((calories_part1 * calories_part2), 6)
+        return calories
 
 
 class SportsWalking(Training):
