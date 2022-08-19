@@ -1,5 +1,5 @@
 class InfoMessage:
-    """Информационное сообщение о тренировке."""
+    """Информационное сообщение о тренировке.33"""
     def __init__(self,
                  training_type: str,
                  duration: float,
@@ -14,14 +14,20 @@ class InfoMessage:
         self.calories = calories
 
     def get_message(self) -> str:
-        message: str = (f'Тип тренировки: {self.training_type}; '
-                        f'Длительность: {self.duration:.3f} ч.; '
-                        f'Дистанция: {self.distance:.3f} км; '
-                        f'Ср. скорость: {self.speed:.3f} км/ч; '
-                        f'Потрачено ккал: {self.calories:.3f}.'
-                        )
-
-        return message
+        # message: str = (f'Тип тренировки: {self.training_type}; '
+        #                 f'Длительность: {self.duration:.3f} ч.; '
+        #                 f'Дистанция: {self.distance:.3f} км; '
+        #                 f'Ср. скорость: {self.speed:.3f} км/ч; '
+        #                 f'Потрачено ккал: {self.calories:.3f}.'
+        #                 )
+        #
+        # return message
+        return (f'Тип тренировки: {self.training_type}; '
+                f'Длительность: {self.duration:.3f} ч.; '
+                f'Дистанция: {self.distance:.3f} км; '
+                f'Ср. скорость: {self.speed:.3f} км/ч; '
+                f'Потрачено ккал: {self.calories:.3f}.'
+                )
 
 
 class Training:
@@ -80,6 +86,8 @@ class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     # K1: float = 0.035
     # K2: float = 0.029
+    # K3: int = 2
+    # M_IN_H: int = 60
     def __init__(self,
                  action: int,
                  duration: float,
@@ -142,7 +150,6 @@ def read_package(workout_type: str, data: list) -> Training:
 
 def main(training: Training) -> None:
     """Главная функция."""
-    # info = InfoMessage.get_message(training.show_training_info())
     info = training.show_training_info().get_message()
     print(info)
 
@@ -155,5 +162,8 @@ if __name__ == '__main__':
     ]
 
     for workout_type, data in packages:
-        training = read_package(workout_type, data)
-        main(training)
+        try:
+            training = read_package(workout_type, data)
+            main(training)
+        except KeyError:
+            print('Указан неверный тип тренировки.')
