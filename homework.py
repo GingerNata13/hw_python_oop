@@ -83,7 +83,8 @@ class Running(Training):
         """Получить количество затраченных калорий."""
         """Здесь и далее попыталась дать вспомогательным переменым более
         осмысленные названия, но у меня не везде получилось"""
-        cal_f_part1 = (self.K_1 * self.get_mean_speed() - self.K_2) * self.weight
+        speed = self.get_mean_speed()
+        cal_f_part1 = (self.K_1 * speed - self.K_2) * self.weight
         duration_in_min = self.duration * self.M_IN_H
         calories: float = cal_f_part1 / self.M_IN_KM * duration_in_min
         return calories
