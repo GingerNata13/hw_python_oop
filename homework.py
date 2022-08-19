@@ -1,5 +1,5 @@
 class InfoMessage:
-    """Информационное сообщение о тренировке.33"""
+    """Информационное сообщение о тренировке."""
     def __init__(self,
                  training_type: str,
                  duration: float,
@@ -14,14 +14,13 @@ class InfoMessage:
         self.calories = calories
 
     def get_message(self) -> str:
-        # message: str = (f'Тип тренировки: {self.training_type}; '
-        #                 f'Длительность: {self.duration:.3f} ч.; '
-        #                 f'Дистанция: {self.distance:.3f} км; '
-        #                 f'Ср. скорость: {self.speed:.3f} км/ч; '
-        #                 f'Потрачено ккал: {self.calories:.3f}.'
-        #                 )
-        #
-        # return message
+        """Но имеет ли смысл message объявлять тут? - Данная переменная
+        действительно лишняя и изначально её не было, но при отпрвке кода
+        Вам на проверку выскакивала ошибка: get_message() должна возвращать тип str,
+        хотя def get_message(self) -> str: было прописано, решилась данная проблема
+        только добавлением переменной message. Посмотрим пропустит ли проверка в этот
+        раз ))."""
+
         return (f'Тип тренировки: {self.training_type}; '
                 f'Длительность: {self.duration:.3f} ч.; '
                 f'Дистанция: {self.distance:.3f} км; '
@@ -34,6 +33,7 @@ class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65
     M_IN_KM: int = 1000
+    M_IN_H: int = 60
 
     def __init__(self,
                  action: int,
@@ -70,24 +70,30 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
+    """Константы вывела, так тоже было изначально (о чём свидетельствали
+    мои забытые в комментах части кода)), но потом мне показалось, что это 
+    сильно "утежеляет" код, особенно при дальнейшем описании формул ввиду 
+    ограничения строк <79 символов, я из-за этого ограничения и так несколько 
+    раз ошибалась в них, а после вывода констант строки становятся ещё длиннее."""
+    K_1: int = 18
+    K_2: int = 20
+
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        k1: int = 18
-        k2: int = 20
-        m_in_h: int = 60
-        calories_part1 = (k1 * self.get_mean_speed() - k2) * self.weight
-        calories_part2 = self.M_IN_KM
-        calories_part3 = self.duration * m_in_h
-        calories: float = calories_part1 / calories_part2 * calories_part3
+        """Здесь и далее попыталась дать вспомогательным переменым более
+        осмысленные названия, но у меня не везде получилось"""
+        cal_f_part1 = (self.K_1 * self.get_mean_speed() - self.K_2) * self.weight
+        duration_in_min = self.duration * self.M_IN_H
+        calories: float = cal_f_part1 / self.M_IN_KM * duration_in_min
         return calories
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    # K1: float = 0.035
-    # K2: float = 0.029
-    # K3: int = 2
-    # M_IN_H: int = 60
+    K_1: float = 0.035
+    K_2: float = 0.029
+    K_3: int = 2
+
     def __init__(self,
                  action: int,
                  duration: float,
@@ -98,21 +104,19 @@ class SportsWalking(Training):
         self.height = height
 
     def get_spent_calories(self) -> float:
-        k1: float = 0.035
-        k2: float = 0.029
-        k3: int = 2
-        m_in_h: int = 60
         """Получить количество затраченных калорий."""
-        calories_part0 = self.get_mean_speed() ** k3 // self.height
-        calories_part1 = k1 * self.weight + calories_part0 * k2 * self.weight
-        calories_part2 = self.duration * m_in_h
-        calories: float = calories_part1 * calories_part2
+        cal_f_part1 = self.get_mean_speed() ** self.K_3 // self.height
+        cal_f_part2 = self.K_1 * self.weight + cal_f_part1 * self.K_2 * self.weight
+        duration_in_min = self.duration * self.M_IN_H
+        calories: float = cal_f_part2 * duration_in_min
         return calories
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
+    K_1: float = 1.1
+    K_2: int = 2
 
     def __init__(self,
                  action: int,
@@ -127,17 +131,13 @@ class Swimming(Training):
 
     def get_mean_speed(self) -> float:
         """Получить среднюю скорость движения."""
-        speed_part1 = self.length_pool * self.count_pool
-        speed_part2 = self.M_IN_KM
-        speed_part3 = self.duration
-        speed: float = speed_part1 / speed_part2 / speed_part3
+        pool_distance = self.length_pool * self.count_pool
+        speed: float = pool_distance / self.M_IN_KM / self.duration
         return speed
 
     def get_spent_calories(self) -> float:
-        k1: float = 1.1
-        k2: int = 2
         """Получить количество затраченных калорий."""
-        calories: float = (self.get_mean_speed() + k1) * k2 * self.weight
+        calories: float = (self.get_mean_speed() + self.K_1) * self.K_2 * self.weight
         return calories
 
 
@@ -160,6 +160,9 @@ if __name__ == '__main__':
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180]),
     ]
+    """Сделала проверку на KeyError, Вы предлагали это сделать в read_package(), 
+    но там я не справилась с дальнейшей передачей данных в переменную training,
+    в случае KeyError, поэтому решила сразу её проверять."""
 
     for workout_type, data in packages:
         try:
@@ -167,3 +170,10 @@ if __name__ == '__main__':
             main(training)
         except KeyError:
             print('Указан неверный тип тренировки.')
+
+    """Отдельное спасибо за комплименты в адрес пары решений в моём коде!
+    Он мне дался совсем не просто во второй половине, а в Слак заглядывалать
+    не хотелось, чтоб случайно чужое не списать."""
+
+    """P.S. Напишите мне, пожалуйста, на будущее, если оставлять такие комментарии 
+    непосредственно в коде нельзя."""
